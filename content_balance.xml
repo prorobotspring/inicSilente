@@ -1,0 +1,8 @@
+<!--Zero or more repetitions:-->
+            <ccws:BalanceCreditAccount>
+               <ccws:CreditValue>${credit}</ccws:CreditValue>
+               <!--Optional:-->
+               <ccws:BalanceName>${balance}</ccws:BalanceName>
+               <ccws:ExpirationDate>${expDate}</ccws:ExpirationDate>
+            </ccws:BalanceCreditAccount>
+

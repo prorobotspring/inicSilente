@@ -1,0 +1,6 @@
+</ccws:subCreditBalances>
+         <ccws:balanceChangeComment>${comment}</ccws:balanceChangeComment>
+      </ccws:CreditAccount>
+   </soapenv:Body>
+</soapenv:Envelope>
+

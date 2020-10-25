@@ -1,0 +1,7 @@
+mv config.properties config.properties_promo30
+mv config.properties_promo20 config.properties
+
+java -d64 -classpath :./lib/bssintutils.jar:./lib/log4j-1.2.15.jar:./lib/jdom.jar:./lib/commons-codec-1.3.jar:./lib/commons-httpclient-3.1.jar:./lib/sax2.jar:./lib/commons-jxpath-1.2.jar:./lib/commons-logging-1.1.1.jar:/appsbss81/beawsl81/weblogic81/server/lib/weblogic.jar:./inic_Silente.jar:$CLASSPATH ve.com.digitel.retrieveClient.rc.RC aplicar.beneficio.iniciativa
+
+mv config.properties config.properties_promo20
+mv config.properties_promo30 config.properties

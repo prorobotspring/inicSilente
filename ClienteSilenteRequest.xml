@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+	<header>
+		<TraceId>${traceId}</TraceId>
+		<Target>${target}</Target>
+	</header>
+	<body>
+		<GSM>${msisdn}</GSM>
+		<Region>${region}</Region>
+		<Tipo_Cliente>${tipo_cliente}</Tipo_Cliente>
+		<Plan_Voz>${plan_voz}</Plan_Voz>
+		<Ult_Fecha_Recarga>${ult_fecha_recarga}</Ult_Fecha_Recarga>
+		<Saldo>${saldo}</Saldo>
+	</body>
+</request>

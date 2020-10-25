@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<annotation>
+		<documentation>Configuracion de los servicios para la iniciativa de retencion de clientes Silentes: Recargate y te Recargamos</documentation>
+		<version>1.0</version>
+	</annotation>
+	<servicios>
+
+		<servicio id="cargar.cliente.bd">
+			<annotation>
+				<documentation>
+					Comando para la carga del cliente en BD de iniciativa
+				</documentation>
+			</annotation>
+			<comandos>
+				<comando delegador="CargarClienteBD" servicio="cargar.cliente.bd">
+					<parametros ambito="global">
+						<parametro formal="GSM" actual="GSM" />
+						<parametro formal="Region" actual="Region" />
+						<parametro formal="Tipo_Cliente" actual="Tipo_Cliente" />
+						<parametro formal="Plan_Voz" actual="Plan_Voz" />
+						<parametro formal="Ult_Fecha_Recarga" actual="Ult_Fecha_Recarga" />
+						<parametro formal="Meses_Sin_Recarga" actual="Meses_Sin_Recarga" />
+						<parametro formal="Saldo" actual="Saldo" />
+					</parametros>
+				</comando>
+			</comandos>
+		</servicio>
+
+		<servicio id="enviar.sms.inicio">
+			<annotation>
+				<documentation>
+					Comando para el envio de los sms de inicio de iniciativa
+				</documentation>
+			</annotation>
+			<comandos>
+				<comando delegador="EnviarSMSInicio" servicio="enviar.sms.inicio">
+					<parametros ambito="global">
+						<parametro formal="GSM" actual="GSM" />
+					</parametros>
+				</comando>
+			</comandos>
+		</servicio>
+		
+		<servicio id="enviar.sms.recordatorio">
+			<annotation>
+				<documentation>
+					Comando para el envio de los sms de inicio de recordatorio
+				</documentation>
+			</annotation>
+			<comandos>
+				<comando delegador="EnviarSMSRecordatorio" servicio="enviar.sms.recordatorio">
+					<parametros ambito="global">
+						<parametro formal="GSM" actual="GSM" />
+					</parametros>
+				</comando>
+			</comandos>
+		</servicio>
+		
+		<servicio id="crear.archivo.alertas">
+			<annotation>
+				<documentation>
+					Comando para el inicio de creacion de archivo para las alertas en Siebel
+				</documentation>
+			</annotation>
+			<comandos>
+				<comando delegador="SeleccionarClientesAlertas" servicio="crear.archivo.alertas">
+					<parametros ambito="global">
+						<parametro formal="ID_Iniciativa" actual="ID_Iniciativa" />
+					</parametros>
+				</comando>
+			</comandos>
+		</servicio>
+		
+		<servicio id="aplicar.beneficio.iniciativa">
+			<annotation>
+				<documentation>
+					Comando para la aplicacion de beneficio seg�n la iniciativa. Se actualiza cliente y se envia SMS
+				</documentation>
+			</annotation>
+			<comandos>
+				<comando delegador="AplicarBeneficioRTBS" servicio="aplicar.beneficio.rtbs">
+					<parametros ambito="global">
+						<parametro formal="GSM" actual="GSM" />
+						<parametro formal="Ult_Fecha_Recarga" actual="Ult_Fecha_Recarga" />
+						<parametro formal="Recarga" actual="Recarga" />
+						<parametro formal="Saldo" actual="Saldo" />
+						<parametro formal="ID_Iniciativa" actual="ID_Iniciativa" />
+					</parametros>
+				</comando>
+				<comando delegador="ActualizarClienteBD" servicio="actualizar.cliente.bd">
+					<parametros ambito="global">
+						<parametro formal="GSM" actual="GSM" />
+						<parametro formal="Ult_Fecha_Recarga" actual="Ult_Fecha_Recarga" />
+						<parametro formal="Recarga" actual="Recarga" />
+						<parametro formal="Saldo" actual="Saldo" />
+						<parametro formal="ID_Iniciativa" actual="ID_Iniciativa" />
+					</parametros>
+				</comando>
+				<comando delegador="EnviarSMSBeneficio" servicio="enviar.sms.beneficio">
+					<parametros ambito="global">
+						<parametro formal="GSM" actual="GSM" />
+						<parametro formal="Ult_Fecha_Recarga" actual="Ult_Fecha_Recarga" />
+						<parametro formal="Recarga" actual="Recarga" />
+						<parametro formal="Saldo" actual="Saldo" />
+						<parametro formal="ID_Iniciativa" actual="ID_Iniciativa" />
+					</parametros>
+					<retorno ignorar="y" codes="3000" />
+				</comando>
+			</comandos>
+		</servicio>
+		
+		<servicio id="crear.archivo.alertas.diarias">
+			<annotation>
+				<documentation>
+					Comando para el inicio de creacion de archivo para las alertas en Siebel
+				</documentation>
+			</annotation>
+			<comandos>
+				<comando delegador="SeleccionarClientesAlertasDiarias" servicio="crear.archivo.alertas.diarias">
+					<parametros ambito="global">
+						<parametro formal="ID_Iniciativa" actual="ID_Iniciativa" />
+					</parametros>
+				</comando>
+			</comandos>
+		</servicio>
+		
+	</servicios>
+
+	<delegadores>
+		<delegador id="obtener.clientes.alertas" constructor="class"
+			nombre="ve.com.digitel.retrieveClient.delegator.RetrieveClientsDelegator">
+			<initParams>
+				<initParam>
+					<name>context</name>
+					<value>silente.initial.context</value>
+				</initParam>
+				<initParam>
+					<name>providerURL</name>
+					<value>silente.provider.url</value>
+				</initParam>
+				<initParam>
+					<name>dataSource</name>
+					<value>silente.data.source</value>
+				</initParam>
+				<initParam>
+					<name>query</name>
+					<value>silente.query.usuarios.sin.beneficio</value>
+				</initParam>
+			</initParams>
+		</delegador>
+		<delegador id="SeleccionarClientesAlertas" constructor="class"
+			nombre="ve.com.digitel.retrieveClient.delegator.SiebelAlertFile">
+			<initParams>
+				<initParam>
+					<name>pathFile</name>
+					<value>silente.alerta.siebel.semanal.path</value>
+				</initParam>
+				<initParam>
+					<name>nameFile</name>
+					<value>silente.alerta.siebel.archivo</value>
+				</initParam>
+				<initParam>
+					<name>extFile</name>
+					<value>silente.alerta.siebel.ext</value>
+				</initParam>
+				<initParam>
+					<name>formatDateFile</name>
+					<value>silente.alerta.siebel.date.format</value>
+				</initParam>
+        <initParam>
+					<name>writerClass</name>
+					<value>silente.siebel.alertas.writer</value>
+				</initParam>
+				<initParam>
+					<name>split</name>
+					<value>silente.alerta.siebel.split</value>
+				</initParam>
+				<initParam>
+					<name>mensaje</name>
+					<value>silente.alerta.semanal.siebel.mensaje</value>
+				</initParam>
+				<initParam>
+					<name>context</name>
+					<value>silente.initial.context</value>
+				</initParam>
+				<initParam>
+					<name>providerURL</name>
+					<value>silente.provider.url</value>
+				</initParam>
+				<initParam>
+					<name>dataSource</name>
+					<value>silente.data.source</value>
+				</initParam>
+				<initParam>
+					<name>query</name>
+					<value>silente.alerta.siebel.query.semanal</value>
+				</initParam>
+			</initParams>
+		</delegador>	 
+    <delegador id="SeleccionarClientesAlertasDiarias" constructor="class"
+			nombre="ve.com.digitel.retrieveClient.delegator.SiebelAlertFile">
+			<initParams>
+				<initParam>
+					<name>pathFile</name>
+					<value>silente.alerta.siebel.diaria.path</value>
+				</initParam>
+				<initParam>
+					<name>nameFile</name>
+					<value>silente.alerta.siebel.archivo</value>
+				</initParam>
+				<initParam>
+					<name>extFile</name>
+					<value>silente.alerta.siebel.ext</value>
+				</initParam>
+				<initParam>
+					<name>formatDateFile</name>
+					<value>silente.alerta.siebel.date.format</value>
+				</initParam>
+        		<initParam>
+					<name>writerClass</name>
+					<value>silente.siebel.alertas.writer</value>
+				</initParam>
+				<initParam>
+					<name>split</name>
+					<value>silente.alerta.siebel.split</value>
+				</initParam>
+				<initParam>
+					<name>mensaje</name>
+					<value>silente.alerta.diaria.siebel.mensaje</value>
+				</initParam>
+				<initParam>
+					<name>context</name>
+					<value>silente.initial.context</value>
+				</initParam>
+				<initParam>
+					<name>providerURL</name>
+					<value>silente.provider.url</value>
+				</initParam>
+				<initParam>
+					<name>dataSource</name>
+					<value>silente.data.source</value>
+				</initParam>
+				<initParam>
+					<name>query</name>
+					<value>silente.alerta.siebel.query.diario</value>
+				</initParam>
+			</initParams>
+		</delegador>
+		<delegador id="AplicarBeneficioRTBS" constructor="class"
+			nombre="ve.com.digitel.retrieveClient.delegator.ApplyBenefitDelegator">
+			<initParams>
+				<initParam>
+					<name>endPointURL</name>
+					<value>silente.ccws.endpoint.rtbs</value>
+				</initParam>
+				<initParam>
+					<name>SOAPActionValue</name>
+					<value>silente.ccws.httpclient.credit.account.SOAPActionValue</value>
+				</initParam>
+				<initParam>
+					<name>user</name>
+					<value>silente.ccws.endpoint.rtbs.user</value>
+				</initParam>
+				<initParam>
+					<name>password</name>
+					<value>silente.ccws.endpoint.rtbs.password</value>
+				</initParam>
+				<initParam>
+					<name>contentHeader</name>
+					<value>silente.ccws.endpoint.credit.account.contentHeader</value>
+				</initParam>
+        <initParam>
+					<name>contentBalance</name>
+					<value>silente.ccws.endpoint.credit.account.contentBalance</value>
+				</initParam>
+				<initParam>
+					<name>contentFooter</name>
+					<value>silente.ccws.endpoint.credit.account.contentFooter</value>
+				</initParam>
+        <initParam>
+					<name>comment</name>
+					<value>silente.ccws.endpoint.credit.account.comment</value>
+				</initParam>
+        <initParam>
+					<name>maxConnections</name>
+					<value>silente.ccws.httpclient.maxconnetionPerHost</value>
+				</initParam>
+				<initParam>
+					<name>totalConnection</name>
+					<value>silente.ccws.httpclient.maxTotalConnections</value>
+				</initParam> 
+				<initParam>
+					<name>estadoPermitido</name>
+					<value>silente.recharge.allow.state</value>
+				</initParam>   
+			</initParams>
+		</delegador>
+		<delegador id="ActualizarClienteBD" constructor="class"
+			nombre="ve.com.digitel.retrieveClient.delegator.UpdateClientDelegator">
+			<initParams>
+				<initParam>
+					<name>context</name>
+					<value>silente.initial.context</value>
+				</initParam>
+				<initParam>
+					<name>providerURL</name>
+					<value>silente.provider.url</value>
+				</initParam>
+				<initParam>
+					<name>dataSource</name>
+					<value>silente.data.source</value>
+				</initParam>
+				<initParam>
+					<name>query</name>
+					<value>silente.query.update.cliente</value>
+				</initParam>
+				<initParam>
+					<name>formatoMonto</name>
+					<value>silente.formato.monto</value>
+				</initParam>
+			</initParams>
+		</delegador>
+		<delegador id="CargarClienteBD" constructor="class"
+			nombre="ve.com.digitel.retrieveClient.delegator.InitialLoadDelegator">
+			<initParams>
+				<initParam>
+					<name>context</name>
+					<value>silente.initial.context</value>
+				</initParam>
+				<initParam>
+					<name>providerURL</name>
+					<value>silente.provider.url</value>
+				</initParam>
+				<initParam>
+					<name>dataSource</name>
+					<value>silente.data.source</value>
+				</initParam>
+				<initParam>
+					<name>query</name>
+					<value>silente.query.carga.inicial.clientes</value>
+				</initParam>
+				<initParam>
+					<name>idIniciativa</name>
+					<value>silente.id.iniciativa.carga.inicial</value>
+				</initParam>
+				<initParam>
+					<name>formatoMes</name>
+					<value>silente.formato.mes</value>
+				</initParam>
+				<initParam>
+					<name>formatoMonto</name>
+					<value>silente.formato.monto</value>
+				</initParam>
+			</initParams>
+		</delegador>
+		<delegador id="EnviarSMSBeneficio" constructor="class"
+			nombre="ve.com.digitel.retrieveClient.delegator.SMSSenderDelegator">
+		  <initParams>
+		    <initParam>
+					<name>prepagoUrl</name>
+					<value>application.url.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>prepagoUser</name>
+					<value>application.user.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>prepagoPass</name>
+					<value>application.password.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>prepagoSender</name>
+					<value>application.sender.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoUrl</name>
+					<value>application.url.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoUser</name>
+					<value>application.user.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoPass</name>
+					<value>application.password.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoSender</name>
+					<value>application.sender.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>maxConnections</name>
+					<value>application.httpclient.maxconnetionPerHost</value>
+				</initParam>
+				<initParam>
+					<name>totalConnection</name>
+					<value>application.httpclient.maxTotalConnections</value>
+				</initParam>
+				<initParam>
+					<name>mensaje</name>
+					<value>silente.sms.mensaje.beneficio</value>
+				</initParam>
+				<initParam>
+					<name>formatoMonto</name>
+					<value>silente.formato.monto.sms</value>
+				</initParam>
+		  </initParams>
+    </delegador>
+    <delegador id="EnviarSMSInicio" constructor="class"
+			nombre="ve.com.digitel.retrieveClient.delegator.GenericSMSSenderDelegator">
+		  <initParams>
+		    <initParam>
+					<name>prepagoUrl</name>
+					<value>application.url.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>prepagoUser</name>
+					<value>application.user.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>prepagoPass</name>
+					<value>application.password.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>prepagoSender</name>
+					<value>application.sender.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoUrl</name>
+					<value>application.url.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoUser</name>
+					<value>application.user.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoPass</name>
+					<value>application.password.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoSender</name>
+					<value>application.sender.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>maxConnections</name>
+					<value>application.httpclient.maxconnetionPerHost</value>
+				</initParam>
+				<initParam>
+					<name>totalConnection</name>
+					<value>application.httpclient.maxTotalConnections</value>
+				</initParam>
+				<initParam>
+					<name>mensaje</name>
+					<value>silente.sms.mensaje.inicio</value>
+				</initParam>
+		  </initParams>
+    </delegador>
+    <delegador id="EnviarSMSRecordatorio" constructor="class"
+			nombre="ve.com.digitel.retrieveClient.delegator.GenericSMSSenderDelegator">
+		  <initParams>
+		    <initParam>
+					<name>prepagoUrl</name>
+					<value>application.url.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>prepagoUser</name>
+					<value>application.user.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>prepagoPass</name>
+					<value>application.password.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>prepagoSender</name>
+					<value>application.sender.prepago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoUrl</name>
+					<value>application.url.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoUser</name>
+					<value>application.user.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoPass</name>
+					<value>application.password.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>postpagoSender</name>
+					<value>application.sender.postpago.sms.sender</value>
+				</initParam>
+				<initParam>
+					<name>maxConnections</name>
+					<value>application.httpclient.maxconnetionPerHost</value>
+				</initParam>
+				<initParam>
+					<name>totalConnection</name>
+					<value>application.httpclient.maxTotalConnections</value>
+				</initParam>
+				<initParam>
+					<name>mensaje</name>
+					<value>silente.sms.mensaje.recordatorio</value>
+				</initParam>
+		  </initParams>
+    </delegador>
+	</delegadores>
+</config>
